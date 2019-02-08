@@ -3,17 +3,69 @@ For a game with 8 tiles of blocks on a 3x3 grid,
 write down the Facts and Rules to model the game state 
 shown as the follows:
 
- y\\x   pos1     pos2     pos3
-     ┌────────┬────────┬────────┐
-pos1 │ tile1  │ tile2  │ tile3  │
-     ├────────┼────────┼────────┤
-pos2 │ tile8  │ empty  │ tile4  │
-     ├────────┼────────┼────────┤
-pos3 │ tile7  │ tile6  │ tile5  │
-     └────────┴────────┴────────┘
+
 
 Example: 
 fact: (pred obj1 obj2)
 rule: ((pred obj1 obj2) (pred obj2 obj3)) -> (pred obj1 obj3)
 
 """
+
+# objects
+
+# there are tiles
+fact: (isA tile1 tile)
+fact: (isA tile2 tile)
+fact: (isA tile3 tile)
+fact: (isA tile4 tile)
+fact: (isA tile5 tile)
+fact: (isA tile6 tile)
+fact: (isA tile7 tile)
+fact: (isA tile8 tile)
+
+# there are locations
+fact: (isA pos1 loc)
+fact: (isA pos2 loc)
+fact: (isA pos3 loc)
+
+# tiles have locations
+fact: (atX tile1 pos1)
+fact: (atY tile1 pos1)
+fact: (atX tile2 pos2)
+fact: (atY tile2 pos1)
+fact: (atX tile3 pos3)
+fact: (atY tile3 pos1)
+fact: (atX tile4 pos3)
+fact: (atY tile4 pos2)
+fact: (atX tile5 pos3)
+fact: (atY tile5 pos3)
+fact: (atX tile6 pos2)
+fact: (atY tile6 pos3)
+fact: (atX tile7 pos1)
+fact: (atY tile7 pos3)
+fact: (atX tile8 pos1)
+fact: (atY tile8 pos2)
+
+# there is a blank
+fact: (isA blank1 blank)
+
+# the blank has a location
+fact: (atX blank1 pos2)
+fact: (atY blank1 pos2)
+
+# relationships
+rule: ((isA ?t1 tile) (isA ?t2 tile) (atX ?t1 ?x1) (atX ?t2 ?x1)) -> (samerow ?t1 ?t2)
+rule: ((isA ?t1 tile) (isA ?b1 blank) (atX ?t1 ?x1) (atX ?b1 ?x1)) -> (samerow ?t1 ?b1)
+rule: ((samerow ?t1 ?b1) (atY ?t1 pos2)) -> (adjacent ?t1 ?b1)
+rule: ((samerow ?t1 ?b1) (atY ?b1 pos2)) -> (adjacent ?t1 ?b1)
+rule: ((isA ?t1 tile) (isA ?t2 tile) (atY ?t1 ?y1) (atY ?t2 ?y1)) -> (samecol ?t1 ?t2)
+rule: ((isA ?t1 tile) (isA ?b1 blank) (atY ?t1 ?y1) (atY ?b1 ?y1)) -> (samecol ?t1 ?b1)
+rule: ((samecol ?t1 ?t2) (atX ?t1 pos2)) -> (adjacent ?t1 ?t2)
+rule: ((samecol ?t1 ?t2) (atX ?t2 pos2)) -> (adjacent ?t1 ?t2)
+
+rule: ((adjacent ?t1 ?t2)) -> (adjacent ?t2 ?t1)
+
+# constraints
+rule: ((isA ?t1 tile) (atX ?t1 ?xinit) (atY ?t1 ?yinit) (isA ?b1 blank) (atX ?b1 ?xfin) (atY ?b1 ?yfin) (adjacent ?t1 ?b1)) -> (movable ?t1 ?xinit ?yinit ?xfin ?yfin)
+
+
